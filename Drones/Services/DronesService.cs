@@ -19,5 +19,9 @@ namespace Drones.Services
             _medicationRepository = medicationRepository;
             _loadRepository = loadRepository;
         }
+
+        //public async Task<int> RegisterDrone() 
+        //{
+        //}
     }
 }
