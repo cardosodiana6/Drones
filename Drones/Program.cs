@@ -1,3 +1,5 @@
+using AutoMapper;
+using Drones.Mapper;
 using Drones.Model.Context;
 using Drones.Model.Repository;
 using Drones.Model.Repository.Interfaces;
@@ -17,6 +19,13 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<DbContext, DronesDbContext>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IDronesService, DronesService>();
+
+var mapperConfig = new MapperConfiguration(mc => 
+{
+    mc.AddProfile(new MappingProfile());
+});
+var mapper = mapperConfig.CreateMapper();
+builder.Services.AddSingleton(mapper);
 
 var app = builder.Build();
 

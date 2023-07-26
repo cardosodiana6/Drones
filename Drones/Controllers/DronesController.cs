@@ -1,5 +1,7 @@
+using Drones.Models;
 using Drones.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace Drones.Controllers
 {
@@ -16,6 +18,16 @@ namespace Drones.Controllers
             _dronesService = dronesService;
         }
 
+        [HttpPost("action")]
+        public async Task<int> RegisterDrone([FromBody] DroneM drone) 
+        {
+            return await _dronesService.RegisterDrone(drone);
+        }
 
+        [HttpGet("[action]/{droneId}")]
+        public async Task<DroneM> GetDroneById(int droneId)
+        {
+            return await _dronesService.GetDroneById(droneId);
+        }
     }
 }
