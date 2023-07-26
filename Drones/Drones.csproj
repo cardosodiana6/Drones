@@ -9,11 +9,16 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="12.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="7.0.9" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="7.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Drones.Model\Drones.Model.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Upload\Files\" />
   </ItemGroup>
 
 </Project>

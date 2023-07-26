@@ -3,6 +3,7 @@ using Drones.Model.Entities;
 using Drones.Model.Repository.Interfaces;
 using Drones.Models;
 using Drones.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Drones.Services
@@ -31,10 +32,45 @@ namespace Drones.Services
             return newDrone.Id;
         }
 
-        public async Task<DroneM> GetDroneById(int id) 
+        public async Task<int> RegisterMedication(MedicationM medication)
         {
-            var drone = await _droneRepository.GetById(id);
-            return _mapper.Map<DroneM>(drone);
+            medication = await SaveFile(medication);
+            var newMedication = _mapper.Map<Medication>(medication);
+            await _medicationRepository.AddAsync(newMedication);
+            return newMedication.Id;
         }
+
+        private async Task<MedicationM> SaveFile(MedicationM medication) 
+        {
+            if (medication.File != null && medication.File.Length > 0)
+            {
+                var file = medication.File;
+                var extension = $".{file.FileName.Split('.')[file.FileName.Split('.').Length - 1]}";
+
+                var fileName = $"{DateTime.Now.Ticks}{extension}";
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload\\Files");
+
+                if (!Directory.Exists(filePath))
+                {
+                    Directory.CreateDirectory(filePath);
+                }
+                var exactPath = Path.Combine(Directory.GetCurrentDirectory(), "Upload\\Files", fileName);
+                using (var stream = new FileStream(exactPath, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+                medication.ImageName = file.Name;
+                medication.ImagePath = fileName;
+            }
+            return medication;
+        }
+
+        public async Task<int> GetBatteryLevel(int dronId) 
+        {
+            var drone = await _droneRepository.GetById(dronId);
+            return drone != null ? drone.BatteryLevel : -1;
+        }
+
+
     }
 }

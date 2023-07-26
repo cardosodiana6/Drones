@@ -6,6 +6,8 @@ namespace Drones.Services.Interfaces
     {
         Task<int> RegisterDrone(DroneM drone);
 
-        Task<DroneM> GetDroneById(int id);
+        Task<int> RegisterMedication(MedicationM medication);
+
+        Task<int> GetBatteryLevel(int dronId);
     }
 }

@@ -18,16 +18,22 @@ namespace Drones.Controllers
             _dronesService = dronesService;
         }
 
-        [HttpPost("action")]
+        [HttpPost("[action]")]
         public async Task<int> RegisterDrone([FromBody] DroneM drone) 
         {
             return await _dronesService.RegisterDrone(drone);
         }
 
-        [HttpGet("[action]/{droneId}")]
-        public async Task<DroneM> GetDroneById(int droneId)
+        [HttpPost("[action]")]
+        public async Task<int> RegisterMedication([FromForm] MedicationM medication)
         {
-            return await _dronesService.GetDroneById(droneId);
+            return await _dronesService.RegisterMedication(medication);
+        }
+
+        [HttpGet("[action]/{droneId}")]
+        public async Task<int> GetBatteryLevel(int droneId)
+        {
+            return await _dronesService.GetBatteryLevel(droneId);
         }
     }
 }
