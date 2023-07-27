@@ -19,7 +19,7 @@ namespace Drones.Services.Interfaces
 
         Task<bool> ChangeDroneState(DroneStateM droneState);
 
-        Task<bool> CheckDronBatteryLevelAndState(Drone drone, string newState);
+        Task<bool> UpdateDroneState(Drone drone, string newState);
 
         Task<IEnumerable<DroneM>> GetDrones();
     }

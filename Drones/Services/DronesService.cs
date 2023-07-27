@@ -54,20 +54,16 @@ namespace Drones.Services
         public async Task<bool> ChangeDroneState(DroneStateM droneState)
         {
             var drone = await _droneRepository.GetById(droneState.DroneId);
-            return drone != null ? (await CheckDronBatteryLevelAndState(drone, droneState.State)) : false;
+            return drone != null ? (await UpdateDroneState(drone, droneState.State)) : false;
         }
 
-        public async Task<bool> CheckDronBatteryLevelAndState(Drone drone, string newState)
+        public async Task<bool> UpdateDroneState(Drone drone, string newState)
         {
-            _logger.LogInformation($"Starting the method: CheckDronBatteryLevelAndState");
-            if ((newState != "LOADING" || drone.BatteryLevel > 25) && newState != drone.State)
-            {
-                drone.State = newState;
-                await _droneRepository.UpdateAsync(drone);
-                _logger.LogWarning($"The dron changed its state from LOADING to {newState}, because the dron battery's level is under 25%");
-                return true;
-            }
-            return false;
+            _logger.LogInformation($"Starting the method: UpdateDroneState");
+            drone.State = newState;
+            await _droneRepository.UpdateAsync(drone);
+            _logger.LogWarning($"Dron new state {newState}");
+            return true;
         }
 
         public async Task<IEnumerable<DroneM>> GetDrones()
@@ -104,15 +100,22 @@ namespace Drones.Services
                 var medication = await _medicationRepository.GetById(mappedLoad.MedicationId);
                 if (medication != null)
                 {
-                    if (IsDroneAvailableForLoadMedication(drone, medication))
+                    var result = new ServiceResultM { Value = -1 };
+                    if (drone.IsStateValid())
                     {
-                        await _loadRepository.AddAsync(mappedLoad);
-                        return new ServiceResultM { Value = mappedLoad.Id };
+                        var droneTotalLoadedWeight = GetDroneTotalLoadedWeight(drone.Id);
+                        var sum = droneTotalLoadedWeight + medication.Weight;
+                        if (sum <= drone.Weight) 
+                        { 
+                            await _loadRepository.AddAsync(mappedLoad);
+                            result.Value = mappedLoad.Id;
+                        }
+                        if (sum >= drone.Weight)
+                        {
+                            await UpdateDroneState(drone, "LOADED");
+                        }
                     }
-                    else
-                    {
-                        return new ServiceResultM { Value = -1 };
-                    }
+                    return result;
                 }
                 return new ServiceResultM
                 {
@@ -144,7 +147,13 @@ namespace Drones.Services
             if (drone.IsStateValid())
             {
                 var droneTotalLoadedWeight = GetDroneTotalLoadedWeight(drone.Id);
-                return droneTotalLoadedWeight + medication.Weight <= drone.Weight;
+
+                var sum = droneTotalLoadedWeight + medication.Weight;
+                if (sum <= drone.Weight)
+                {
+
+                    return true;
+                }
             }
             return false;
         }

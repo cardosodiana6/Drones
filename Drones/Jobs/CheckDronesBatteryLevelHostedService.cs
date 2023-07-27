@@ -1,4 +1,5 @@
-﻿using Drones.Model.Entities;
+﻿using Drones.Extensions;
+using Drones.Model.Entities;
 using Drones.Model.Repository.Interfaces;
 using Drones.Services.Interfaces;
 
@@ -36,9 +37,10 @@ namespace Drones.Jobs
                     drones.ToList().ForEach(d => 
                     {
                         _logger.LogInformation($"The drone battery's level is {d.BatteryLevel}% and its state is {d.State}");
-
-                        dronesService.CheckDronBatteryLevelAndState(d,"IDLE").GetAwaiter().GetResult();
-
+                        if(d.HasToChangeState()) 
+                        {
+                            dronesService.UpdateDroneState(d, "IDLE").GetAwaiter().GetResult();
+                        }
                     });
                 }
             }
