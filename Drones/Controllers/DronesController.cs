@@ -55,5 +55,11 @@ namespace Drones.Controllers
             return await _dronesService.GetAvailableDronesForLoading();
         }
 
+        [HttpPut("[action]")]
+        public async Task<bool> ChangeDroneState(DroneStateM droneState)
+        {
+            return await _dronesService.ChangeDroneState(droneState);
+        }
+
     }
 }

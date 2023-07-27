@@ -96,6 +96,20 @@ namespace Drones.Services
             return (await _droneRepository.GetDbSet().Where(d => IsDroneAvailableForLoad(d)).Select(d => d.Id).ToListAsync());
         }
 
+        public async Task<bool> ChangeDroneState(DroneStateM droneState)
+        {
+            var drone = await _droneRepository.GetById(droneState.DroneId);
+
+            if (drone != null && (droneState.State != "LOADING" || drone.BatteryLevel > 25))
+            {
+                drone.State = droneState.State;
+                _droneRepository.Update(drone);
+                return true;
+            }
+            return false;
+        }
+        
+
         #region Auxiliar Methods
 
         private bool IsDroneAvailableForLoadMedication(Drone drone, Medication medication)

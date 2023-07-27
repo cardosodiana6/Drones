@@ -15,5 +15,7 @@ namespace Drones.Services.Interfaces
         Task<IEnumerable<LoadM>> GetLoadedMedicationsByDrone(int droneId);
 
         Task<List<int>> GetAvailableDronesForLoading();
+
+        Task<bool> ChangeDroneState(DroneStateM droneState);
     }
 }
