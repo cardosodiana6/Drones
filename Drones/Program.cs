@@ -1,4 +1,5 @@
 using AutoMapper;
+using Drones.Jobs;
 using Drones.Mapper;
 using Drones.Model.Context;
 using Drones.Model.Repository;
@@ -27,6 +28,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<DbContext, DronesDbContext>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IDronesService, DronesService>();
+builder.Services.AddHostedService<CheckDronesBatteryLevelHostedService>();
 
 var mapperConfig = new MapperConfiguration(mc => 
 {

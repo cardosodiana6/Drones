@@ -6,8 +6,6 @@ namespace Drones.Extensions
 {
     public static class DroneExtensions
     {
-        
-
         public static bool IsStateValid(this Drone @this) 
         {
             return @this != null && (@this.State == "IDLE" || @this.State == "LOADING");

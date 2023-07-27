@@ -8,9 +8,9 @@ namespace Drones.Mapper
     {
         public MappingProfile()
         {
-            CreateMap<Drone, DroneM>().ReverseMap();
-            CreateMap<Medication, MedicationM>().ReverseMap();
-            CreateMap<Load, LoadM>().ReverseMap();
+            CreateMap<DroneM, Drone>().ReverseMap();
+            CreateMap<MedicationM, Medication>();
+            CreateMap<LoadM, Load>().ReverseMap();
         }
     }
 }

@@ -1,11 +1,9 @@
-﻿using Drones.Model.Entities;
-using Drones.Models;
+﻿using Drones.Models;
 
 namespace Drones.Extensions
 {
     public static class MedicationMExtensions
     {
-
         public static async Task<MedicationM> SaveImage(this MedicationM @this) 
         {
             if (@this.File != null && @this.File.Length > 0)
