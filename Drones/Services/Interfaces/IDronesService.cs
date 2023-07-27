@@ -13,5 +13,7 @@ namespace Drones.Services.Interfaces
         Task<ServiceResultM> RegisterLoad(LoadM load);
 
         Task<IEnumerable<LoadM>> GetLoadedMedicationsByDrone(int droneId);
+
+        Task<List<int>> GetAvailableDronesForLoading();
     }
 }

@@ -62,7 +62,7 @@ namespace Drones.Services
                 var medication = await _medicationRepository.GetById(mappedLoad.MedicationId);
                 if (medication != null)
                 {
-                    if (IsDroneAvailable(drone, medication))
+                    if (IsDroneAvailableForLoadMedication(drone, medication))
                     {
                         await _loadRepository.AddAsync(mappedLoad);
                         return new ServiceResultM { Value = mappedLoad.Id };
@@ -81,6 +81,11 @@ namespace Drones.Services
         {
             var droneLoad = _loadRepository.GetDbSet().Where(l => l.DroneId == droneId);
             return droneLoad != null ? droneLoad.ToList().Select(dl => _mapper.Map<LoadM>(dl)) : new List<LoadM>();
+        }
+
+        public async Task<List<int>> GetAvailableDronesForLoading() 
+        {
+            return (await _droneRepository.GetDbSet().Where(d => IsDroneAvailableForLoad(d)).Select(d => d.Id).ToListAsync());
         }
 
         #region Auxiliar Methods
@@ -103,12 +108,22 @@ namespace Drones.Services
             };
         }
 
-        private bool IsDroneAvailable(Drone drone, Medication medication)
+        private bool IsDroneAvailableForLoadMedication(Drone drone, Medication medication)
         {
             if (drone.IsStateValid())
             {
                 var droneTotalLoadedWeight = GetDroneTotalLoadedWeight(drone.Id);
                 return droneTotalLoadedWeight + medication.Weight <= drone.Weight;
+            }
+            return false;
+        }
+
+        private bool IsDroneAvailableForLoad(Drone drone)
+        {
+            if (drone.IsStateValid())
+            {
+                var droneTotalLoadedWeight = GetDroneTotalLoadedWeight(drone.Id);
+                return drone.Weight > droneTotalLoadedWeight;
             }
             return false;
         }

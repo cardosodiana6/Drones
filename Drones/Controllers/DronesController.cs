@@ -47,5 +47,12 @@ namespace Drones.Controllers
         {
             return await _dronesService.GetLoadedMedicationsByDrone(droneId);
         }
+
+        [HttpGet("[action]")]
+        public async Task<IEnumerable<int>> GetAvailableDronesForLoading()
+        {
+            return await _dronesService.GetAvailableDronesForLoading();
+        }
+
     }
 }
