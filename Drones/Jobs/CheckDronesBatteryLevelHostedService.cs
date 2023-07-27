@@ -18,7 +18,7 @@ namespace Drones.Jobs
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            _timer = new Timer(CheckDronesBatteryLevel, null, TimeSpan.Zero, TimeSpan.FromSeconds(15));
+            _timer = new Timer(CheckDronesBatteryLevel, null, TimeSpan.Zero, TimeSpan.FromSeconds(5));
             return Task.CompletedTask;
         }
 

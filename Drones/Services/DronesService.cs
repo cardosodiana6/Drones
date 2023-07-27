@@ -60,7 +60,7 @@ namespace Drones.Services
         public async Task<bool> CheckDronBatteryLevelAndState(Drone drone, string newState)
         {
             _logger.LogInformation($"Starting the method: CheckDronBatteryLevelAndState");
-            if (newState != "LOADING" || drone.BatteryLevel > 25)
+            if ((newState != "LOADING" || drone.BatteryLevel > 25) && newState != drone.State)
             {
                 drone.State = newState;
                 await _droneRepository.UpdateAsync(drone);
