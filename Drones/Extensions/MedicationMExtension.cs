@@ -2,7 +2,7 @@
 
 namespace Drones.Extensions
 {
-    public static class MedicationMExtensions
+    public static class MedicationMExtension
     {
         public static async Task<MedicationM> SaveImage(this MedicationM @this) 
         {

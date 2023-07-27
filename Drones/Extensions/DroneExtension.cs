@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Drones.Extensions
 {
-    public static class DroneExtensions
+    public static class DroneExtension
     {
         public static bool IsStateValid(this Drone @this) 
         {
