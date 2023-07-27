@@ -72,9 +72,17 @@ namespace Drones.Services
                         return new ServiceResultM { Value = -1 };
                     }
                 }
-                return GetNotMedicationFoundResult(mappedLoad.MedicationId);
+                return new ServiceResultM
+                {
+                    HasErrors = true,
+                    ErrorMessage = $"Medication {mappedLoad.MedicationId}, is not registered"
+                }; 
             }
-            return GetNotDroneFoundResult(mappedLoad.DroneId);
+            return new ServiceResultM
+            {
+                HasErrors = true,
+                ErrorMessage = $"Drone {mappedLoad.DroneId}, is not registered"
+            }; 
         }
 
         public async Task<IEnumerable<LoadM>> GetLoadedMedicationsByDrone(int droneId)
@@ -89,24 +97,6 @@ namespace Drones.Services
         }
 
         #region Auxiliar Methods
-
-        private ServiceResultM GetNotDroneFoundResult(int id)
-        {
-            return new ServiceResultM
-            {
-                HasErrors = true,
-                ErrorMessage = $"Drone {id}, is not registered"
-            };
-        }
-
-        private ServiceResultM GetNotMedicationFoundResult(int id)
-        {
-            return new ServiceResultM
-            {
-                HasErrors = true,
-                ErrorMessage = $"Medication {id}, is not registered"
-            };
-        }
 
         private bool IsDroneAvailableForLoadMedication(Drone drone, Medication medication)
         {

@@ -1,0 +1,236 @@
+{
+	"info": {
+		"_postman_id": "80114f93-986a-495f-a6de-1f252654ed45",
+		"name": "DronesPostmanTest",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Drone",
+			"item": [
+				{
+					"name": "RegisterDrone",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"SerialNumber\":\"qqqqqq\",\n\t\"Model\":\"Cruiserweight\",\n\t\"Weight\":\"900\",\n\t\"BatteryLevel\":\"50\",\n\t\"State\":\"IDLE\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5133/Drones/RegisterDrone",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5133",
+							"path": [
+								"Drones",
+								"RegisterDrone"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetBatteryLevelByDrone",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:5133/Drones/GetBatteryLevelByDrone/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5133",
+							"path": [
+								"Drones",
+								"GetBatteryLevelByDrone",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetAvailableDronesForLoading",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:5133/Drones/GetAvailableDronesForLoading/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5133",
+							"path": [
+								"Drones",
+								"GetAvailableDronesForLoading",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Medication",
+			"item": [
+				{
+					"name": "RegisterMedication",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "Name",
+									"value": "Aspirina",
+									"type": "text"
+								},
+								{
+									"key": "Weight",
+									"value": "100",
+									"type": "text"
+								},
+								{
+									"key": "Code",
+									"value": "AA",
+									"type": "text"
+								},
+								{
+									"key": "File",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:5133/Drones/RegisterMedication",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5133",
+							"path": [
+								"Drones",
+								"RegisterMedication"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Load",
+			"item": [
+				{
+					"name": "RegisterLoad",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"DroneId\": 1,\n    \"MedicationId\": 2\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5133/Drones/RegisterLoad",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5133",
+							"path": [
+								"Drones",
+								"RegisterLoad"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetLoadedMedicationsByDrone",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"DroneId\": 1,\n    \"MedicationId\": 2\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5133/Drones/GetLoadedMedicationsByDrone/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5133",
+							"path": [
+								"Drones",
+								"GetLoadedMedicationsByDrone",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

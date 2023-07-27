@@ -21,6 +21,7 @@ namespace Drones.Controllers
         [HttpPost("[action]")]
         public async Task<int> RegisterDrone([FromBody] DroneM drone) 
         {
+            _logger.LogInformation("RegisterDrone method is started");
             return await _dronesService.RegisterDrone(drone);
         }
 
