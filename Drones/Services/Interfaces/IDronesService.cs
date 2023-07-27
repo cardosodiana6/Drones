@@ -1,4 +1,5 @@
-﻿using Drones.Models;
+﻿using Drones.Model.Entities;
+using Drones.Models;
 
 namespace Drones.Services.Interfaces
 {
@@ -8,14 +9,18 @@ namespace Drones.Services.Interfaces
 
         Task<int> RegisterMedication(MedicationM medication);
 
-        Task<ServiceResultM> GetBatteryLevelByDrone(int dronId);
+        Task<ServiceResultM> GetDronBatteryLevel(int dronId);
 
         Task<ServiceResultM> RegisterLoad(LoadM load);
 
-        Task<IEnumerable<LoadM>> GetLoadedMedicationsByDrone(int droneId);
+        Task<IEnumerable<LoadM>> GetDroneLoadedMedications(int droneId);
 
         Task<List<int>> GetAvailableDronesForLoading();
 
         Task<bool> ChangeDroneState(DroneStateM droneState);
+
+        Task<bool> CheckDronBatteryLevelAndState(Drone drone, string newState);
+
+        Task<IEnumerable<DroneM>> GetDrones();
     }
 }

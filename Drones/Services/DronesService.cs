@@ -3,7 +3,6 @@ using Drones.Model.Entities;
 using Drones.Model.Repository.Interfaces;
 using Drones.Models;
 using Drones.Services.Interfaces;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Drones.Extensions;
 
@@ -16,15 +15,19 @@ namespace Drones.Services
         private readonly IRepository<Medication> _medicationRepository;
         private readonly IRepository<Load> _loadRepository;
         private readonly IMapper _mapper;
+        private readonly ILogger<DronesService> _logger;
 
-        public DronesService(DbContext dbContext, IRepository<Drone> droneRepository, IRepository<Medication> medicationRepository, IRepository<Load> loadRepository, IMapper mapper)
+        public DronesService(DbContext dbContext, IRepository<Drone> droneRepository, IRepository<Medication> medicationRepository, IRepository<Load> loadRepository, IMapper mapper, ILogger<DronesService> logger)
         {
             _dbContext = dbContext; 
             _droneRepository = droneRepository;
             _medicationRepository = medicationRepository;
             _loadRepository = loadRepository;
             _mapper = mapper;
+            _logger = logger;
         }
+
+        #region Drone
 
         public async Task<int> RegisterDrone(DroneM drone)
         {
@@ -32,6 +35,51 @@ namespace Drones.Services
             await _droneRepository.AddAsync(mappedDrone);
             return mappedDrone.Id;
         }
+
+        public async Task<ServiceResultM> GetDronBatteryLevel(int dronId)
+        {
+            var drone = await _droneRepository.GetById(dronId);
+            return drone != null ? new ServiceResultM { Value = drone.BatteryLevel } : new ServiceResultM
+            {
+                HasErrors = true,
+                ErrorMessage = $"Drone {dronId}, was not found"
+            };
+        }
+
+        public async Task<List<int>> GetAvailableDronesForLoading()
+        {
+            return (await _droneRepository.GetDbSet().Where(d => IsDroneAvailableForLoad(d)).Select(d => d.Id).ToListAsync());
+        }
+
+        public async Task<bool> ChangeDroneState(DroneStateM droneState)
+        {
+            var drone = await _droneRepository.GetById(droneState.DroneId);
+            return drone != null ? (await CheckDronBatteryLevelAndState(drone, droneState.State)) : false;
+        }
+
+        public async Task<bool> CheckDronBatteryLevelAndState(Drone drone, string newState)
+        {
+            _logger.LogInformation($"Starting the method: CheckDronBatteryLevelAndState");
+            if (newState != "LOADING" || drone.BatteryLevel > 25)
+            {
+                drone.State = newState;
+                await _droneRepository.UpdateAsync(drone);
+                _logger.LogWarning($"The dron changed its state from LOADING to {newState}, because the dron battery's level is under 25%");
+                return true;
+            }
+            return false;
+        }
+
+        public async Task<IEnumerable<DroneM>> GetDrones()
+        {
+            var drones = await _droneRepository.GetAllAsync();
+
+            return drones != null ? drones.Select(d => _mapper.Map<DroneM>(d)).ToList() : new List<DroneM>();
+        }
+
+        #endregion
+
+        #region Medication
 
         public async Task<int> RegisterMedication(MedicationM medication)
         {
@@ -41,15 +89,9 @@ namespace Drones.Services
             return mappedMedication.Id;
         }
 
-        public async Task<ServiceResultM> GetBatteryLevelByDrone(int dronId) 
-        {
-            var drone = await _droneRepository.GetById(dronId);
-            return drone != null ? new ServiceResultM { Value = drone.BatteryLevel } : new ServiceResultM
-            {
-                HasErrors = true,
-                ErrorMessage = $"Drone {dronId}, was not found"
-            };
-        }
+        #endregion
+
+        #region Load
 
         public async Task<ServiceResultM> RegisterLoad(LoadM load)
         {
@@ -76,39 +118,24 @@ namespace Drones.Services
                 {
                     HasErrors = true,
                     ErrorMessage = $"Medication {mappedLoad.MedicationId}, is not registered"
-                }; 
+                };
             }
             return new ServiceResultM
             {
                 HasErrors = true,
                 ErrorMessage = $"Drone {mappedLoad.DroneId}, is not registered"
-            }; 
+            };
         }
 
-        public async Task<IEnumerable<LoadM>> GetLoadedMedicationsByDrone(int droneId)
+        public async Task<IEnumerable<LoadM>> GetDroneLoadedMedications(int droneId)
         {
-            var droneLoad = _loadRepository.GetDbSet().Where(l => l.DroneId == droneId);
-            return droneLoad != null ? droneLoad.ToList().Select(dl => _mapper.Map<LoadM>(dl)) : new List<LoadM>();
+            var droneLoad = await _loadRepository.GetDbSet().Where(l => l.DroneId == droneId).ToListAsync();
+            return droneLoad != null ? droneLoad.Select(dl => _mapper.Map<LoadM>(dl)) : new List<LoadM>();
         }
 
-        public async Task<List<int>> GetAvailableDronesForLoading() 
-        {
-            return (await _droneRepository.GetDbSet().Where(d => IsDroneAvailableForLoad(d)).Select(d => d.Id).ToListAsync());
-        }
 
-        public async Task<bool> ChangeDroneState(DroneStateM droneState)
-        {
-            var drone = await _droneRepository.GetById(droneState.DroneId);
+        #endregion
 
-            if (drone != null && (droneState.State != "LOADING" || drone.BatteryLevel > 25))
-            {
-                drone.State = droneState.State;
-                _droneRepository.Update(drone);
-                return true;
-            }
-            return false;
-        }
-        
 
         #region Auxiliar Methods
 
@@ -136,6 +163,8 @@ namespace Drones.Services
         {
             return _loadRepository.GetDbSet().Where(l => l.DroneId == droneId).Include(l => l.Medication).Select(l => l.Medication.Weight).Sum();
         }
+
+        
 
         #endregion
 

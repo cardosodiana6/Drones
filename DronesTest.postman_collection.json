@@ -22,7 +22,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"SerialNumber\":\"qqqqqq\",\n\t\"Model\":\"Cruiserweight\",\n\t\"Weight\":\"900\",\n\t\"BatteryLevel\":\"50\",\n\t\"State\":\"IDLE\"\n}"
+							"raw": "{\n\t\"SerialNumber\":\"gggggg\",\n\t\"Model\":\"Cruiserweight\",\n\t\"Weight\":\"100\",\n\t\"BatteryLevel\":\"10\",\n\t\"State\":\"LOADED\"\n}"
 						},
 						"url": {
 							"raw": "http://localhost:5133/Drones/RegisterDrone",
@@ -59,7 +59,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "http://localhost:5133/Drones/GetBatteryLevelByDrone/1",
+							"raw": "http://localhost:5133/Drones/GetDronBatteryLevel/1",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -67,7 +67,7 @@
 							"port": "5133",
 							"path": [
 								"Drones",
-								"GetBatteryLevelByDrone",
+								"GetDronBatteryLevel",
 								"1"
 							]
 						}
@@ -108,6 +108,71 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "GetAllDrones",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:5133/Drones/GetDrones",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5133",
+							"path": [
+								"Drones",
+								"GetDrones"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ChangeDroneState",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"DroneId\": 2,\n\t\"State\": \"RETURNING\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5133/Drones/ChangeDroneState",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5133",
+							"path": [
+								"Drones",
+								"ChangeDroneState"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -140,7 +205,8 @@
 								{
 									"key": "File",
 									"type": "file",
-									"src": []
+									"src": [],
+									"disabled": true
 								}
 							]
 						},
@@ -178,7 +244,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"DroneId\": 1,\n    \"MedicationId\": 2\n}"
+							"raw": "{\n    \"DroneId\": 1,\n    \"MedicationId\": 1\n}"
 						},
 						"url": {
 							"raw": "http://localhost:5133/Drones/RegisterLoad",
@@ -212,10 +278,10 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"DroneId\": 1,\n    \"MedicationId\": 2\n}"
+							"raw": ""
 						},
 						"url": {
-							"raw": "http://localhost:5133/Drones/GetLoadedMedicationsByDrone/1",
+							"raw": "http://localhost:5133/Drones/GetDroneLoadedMedications/1",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -223,7 +289,7 @@
 							"port": "5133",
 							"path": [
 								"Drones",
-								"GetLoadedMedicationsByDrone",
+								"GetDroneLoadedMedications",
 								"1"
 							]
 						}

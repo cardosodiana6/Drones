@@ -1,5 +1,6 @@
 ﻿using Drones.Model.Entities;
 using Drones.Model.Repository.Interfaces;
+using Drones.Services.Interfaces;
 
 namespace Drones.Jobs
 {
@@ -25,12 +26,20 @@ namespace Drones.Jobs
         {
             using (var scope = _serviceProvider.CreateScope())
             {
-                var _droneRepository = scope.ServiceProvider.GetRequiredService<IRepository<Drone>>();
+                var droneRepository = scope.ServiceProvider.GetRequiredService<IRepository<Drone>>();
 
-                var drones = _droneRepository.GetAllAsync().GetAwaiter().GetResult();
+                var drones = droneRepository.GetAllAsync().GetAwaiter().GetResult();
                 if (drones != null)
                 {
-                    drones.ToList().ForEach(d => _logger.LogInformation($"The drone battery's level is {d.BatteryLevel}% and its state is {d.State}"));
+                    var dronesService = scope.ServiceProvider.GetRequiredService<IDronesService>();
+
+                    drones.ToList().ForEach(d => 
+                    {
+                        _logger.LogInformation($"The drone battery's level is {d.BatteryLevel}% and its state is {d.State}");
+
+                        dronesService.CheckDronBatteryLevelAndState(d,"IDLE").GetAwaiter().GetResult();
+
+                    });
                 }
             }
         }

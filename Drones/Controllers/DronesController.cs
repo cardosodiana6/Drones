@@ -1,7 +1,6 @@
 using Drones.Models;
 using Drones.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
 
 namespace Drones.Controllers
 {
@@ -18,41 +17,19 @@ namespace Drones.Controllers
             _dronesService = dronesService;
         }
 
+        #region Drone
+
         [HttpPost("[action]")]
-        public async Task<int> RegisterDrone([FromBody] DroneM drone) 
+        public async Task<int> RegisterDrone([FromBody] DroneM drone)
         {
             _logger.LogInformation("RegisterDrone method is started");
             return await _dronesService.RegisterDrone(drone);
         }
 
-        [HttpPost("[action]")]
-        public async Task<int> RegisterMedication([FromForm] MedicationM medication)
-        {
-            return await _dronesService.RegisterMedication(medication);
-        }
-
         [HttpGet("[action]/{droneId}")]
-        public async Task<ServiceResultM> GetBatteryLevelByDrone(int droneId)
+        public async Task<ServiceResultM> GetDronBatteryLevel(int droneId)
         {
-            return await _dronesService.GetBatteryLevelByDrone(droneId);
-        }
-
-        [HttpPost("[action]")]
-        public async Task<ServiceResultM> RegisterLoad([FromBody] LoadM load)
-        {
-            return await _dronesService.RegisterLoad(load);
-        }
-
-        [HttpGet("[action]/{droneId}")]
-        public async Task<IEnumerable<LoadM>> GetLoadedMedicationsByDrone(int droneId)
-        {
-            return await _dronesService.GetLoadedMedicationsByDrone(droneId);
-        }
-
-        [HttpGet("[action]")]
-        public async Task<IEnumerable<int>> GetAvailableDronesForLoading()
-        {
-            return await _dronesService.GetAvailableDronesForLoading();
+            return await _dronesService.GetDronBatteryLevel(droneId);
         }
 
         [HttpPut("[action]")]
@@ -61,5 +38,46 @@ namespace Drones.Controllers
             return await _dronesService.ChangeDroneState(droneState);
         }
 
+        [HttpGet("[action]")]
+        public async Task<IEnumerable<int>> GetAvailableDronesForLoading()
+        {
+            return await _dronesService.GetAvailableDronesForLoading();
+        }
+
+        [HttpGet("[action]")]
+        public async Task<IEnumerable<DroneM>> GetDrones()
+        {
+            return await _dronesService.GetDrones();
+        }
+
+        #endregion
+
+        #region Medication
+
+        [HttpPost("[action]")]
+        public async Task<int> RegisterMedication([FromForm] MedicationM medication)
+        {
+            return await _dronesService.RegisterMedication(medication);
+        }
+
+        #endregion
+
+        #region Load
+
+        [HttpPost("[action]")]
+        public async Task<ServiceResultM> RegisterLoad([FromBody] LoadM load)
+        {
+            return await _dronesService.RegisterLoad(load);
+        }
+
+        [HttpGet("[action]/{droneId}")]
+        public async Task<IEnumerable<LoadM>> GetDroneLoadedMedications(int droneId)
+        {
+            return await _dronesService.GetDroneLoadedMedications(droneId);
+        }
+
+        #endregion
+
+      
     }
 }

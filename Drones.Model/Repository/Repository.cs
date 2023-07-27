@@ -2,6 +2,7 @@
 using Drones.Model.Entities;
 using Drones.Model.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Xml.Xsl;
 
 namespace Drones.Model.Repository
 {
@@ -32,14 +33,17 @@ namespace Drones.Model.Repository
             return await _dbSet.ToListAsync();
         }
 
-        public T Update(T entity)
+        public async Task<T> UpdateAsync(T entity)
         {
-            return _dbSet.Update(entity).Entity;
+            var entityResult = _dbSet.Update(entity).Entity;
+            await _dbContext.SaveChangesAsync();
+            return entityResult;
         }
 
         public DbSet<T> GetDbSet() 
         {
             return _dbSet;
         }
+
     }
 }

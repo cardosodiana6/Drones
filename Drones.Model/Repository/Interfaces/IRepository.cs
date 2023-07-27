@@ -11,7 +11,7 @@ namespace Drones.Model.Repository.Interfaces
 
         Task<IEnumerable<T>> GetAllAsync();
 
-        T Update(T entity);
+        Task<T> UpdateAsync(T entity);
 
         DbSet<T> GetDbSet();
     }
