@@ -31,9 +31,21 @@ namespace Drones.Controllers
         }
 
         [HttpGet("[action]/{droneId}")]
-        public async Task<int> GetBatteryLevel(int droneId)
+        public async Task<ServiceResultM> GetBatteryLevelByDrone(int droneId)
         {
-            return await _dronesService.GetBatteryLevel(droneId);
+            return await _dronesService.GetBatteryLevelByDrone(droneId);
+        }
+
+        [HttpPost("[action]")]
+        public async Task<ServiceResultM> RegisterLoad([FromBody] LoadM load)
+        {
+            return await _dronesService.RegisterLoad(load);
+        }
+
+        [HttpGet("[action]/{droneId}")]
+        public async Task<IEnumerable<LoadM>> GetLoadedMedicationsByDrone(int droneId)
+        {
+            return await _dronesService.GetLoadedMedicationsByDrone(droneId);
         }
     }
 }

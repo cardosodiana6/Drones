@@ -5,6 +5,7 @@ using Drones.Models;
 using Drones.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Drones.Extensions;
 
 namespace Drones.Services
 {
@@ -27,50 +28,97 @@ namespace Drones.Services
 
         public async Task<int> RegisterDrone(DroneM drone)
         {
-            var newDrone = _mapper.Map<Drone>(drone);
-            await _droneRepository.AddAsync(newDrone);
-            return newDrone.Id;
+            var mappedDrone = _mapper.Map<Drone>(drone);
+            await _droneRepository.AddAsync(mappedDrone);
+            return mappedDrone.Id;
         }
 
         public async Task<int> RegisterMedication(MedicationM medication)
         {
-            medication = await SaveFile(medication);
-            var newMedication = _mapper.Map<Medication>(medication);
-            await _medicationRepository.AddAsync(newMedication);
-            return newMedication.Id;
+            medication = await medication.SaveImage();
+            var mappedMedication = _mapper.Map<Medication>(medication);
+            await _medicationRepository.AddAsync(mappedMedication);
+            return mappedMedication.Id;
         }
 
-        private async Task<MedicationM> SaveFile(MedicationM medication) 
-        {
-            if (medication.File != null && medication.File.Length > 0)
-            {
-                var file = medication.File;
-                var extension = $".{file.FileName.Split('.')[file.FileName.Split('.').Length - 1]}";
-
-                var fileName = $"{DateTime.Now.Ticks}{extension}";
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload\\Files");
-
-                if (!Directory.Exists(filePath))
-                {
-                    Directory.CreateDirectory(filePath);
-                }
-                var exactPath = Path.Combine(Directory.GetCurrentDirectory(), "Upload\\Files", fileName);
-                using (var stream = new FileStream(exactPath, FileMode.Create))
-                {
-                    await file.CopyToAsync(stream);
-                }
-                medication.ImageName = file.Name;
-                medication.ImagePath = fileName;
-            }
-            return medication;
-        }
-
-        public async Task<int> GetBatteryLevel(int dronId) 
+        public async Task<ServiceResultM> GetBatteryLevelByDrone(int dronId) 
         {
             var drone = await _droneRepository.GetById(dronId);
-            return drone != null ? drone.BatteryLevel : -1;
+            return drone != null ? new ServiceResultM { Value = drone.BatteryLevel } : new ServiceResultM
+            {
+                HasErrors = true,
+                ErrorMessage = $"Drone {dronId}, was not found"
+            };
         }
 
+        public async Task<ServiceResultM> RegisterLoad(LoadM load)
+        {
+            var mappedLoad = _mapper.Map<Load>(load);
+            mappedLoad.CreationDate = DateTime.Now;
+
+            var drone = await _droneRepository.GetById(mappedLoad.DroneId);
+            if (drone != null)
+            {
+                var medication = await _medicationRepository.GetById(mappedLoad.MedicationId);
+                if (medication != null)
+                {
+                    if (IsDroneAvailable(drone, medication))
+                    {
+                        await _loadRepository.AddAsync(mappedLoad);
+                        return new ServiceResultM { Value = mappedLoad.Id };
+                    }
+                    else
+                    {
+                        return new ServiceResultM { Value = -1 };
+                    }
+                }
+                return GetNotMedicationFoundResult(mappedLoad.MedicationId);
+            }
+            return GetNotDroneFoundResult(mappedLoad.DroneId);
+        }
+
+        public async Task<IEnumerable<LoadM>> GetLoadedMedicationsByDrone(int droneId)
+        {
+            var droneLoad = _loadRepository.GetDbSet().Where(l => l.DroneId == droneId);
+            return droneLoad != null ? droneLoad.ToList().Select(dl => _mapper.Map<LoadM>(dl)) : new List<LoadM>();
+        }
+
+        #region Auxiliar Methods
+
+        private ServiceResultM GetNotDroneFoundResult(int id)
+        {
+            return new ServiceResultM
+            {
+                HasErrors = true,
+                ErrorMessage = $"Drone {id}, is not registered"
+            };
+        }
+
+        private ServiceResultM GetNotMedicationFoundResult(int id)
+        {
+            return new ServiceResultM
+            {
+                HasErrors = true,
+                ErrorMessage = $"Medication {id}, is not registered"
+            };
+        }
+
+        private bool IsDroneAvailable(Drone drone, Medication medication)
+        {
+            if (drone.IsStateValid())
+            {
+                var droneTotalLoadedWeight = GetDroneTotalLoadedWeight(drone.Id);
+                return droneTotalLoadedWeight + medication.Weight <= drone.Weight;
+            }
+            return false;
+        }
+
+        private double GetDroneTotalLoadedWeight(int droneId)
+        {
+            return _loadRepository.GetDbSet().Where(l => l.DroneId == droneId).Include(l => l.Medication).Select(l => l.Medication.Weight).Sum();
+        }
+
+        #endregion
 
     }
 }

@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Upload\Files\" />
+    <Folder Include="Upload\" />
   </ItemGroup>
 
 </Project>

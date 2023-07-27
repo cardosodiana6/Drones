@@ -8,6 +8,10 @@ namespace Drones.Services.Interfaces
 
         Task<int> RegisterMedication(MedicationM medication);
 
-        Task<int> GetBatteryLevel(int dronId);
+        Task<ServiceResultM> GetBatteryLevelByDrone(int dronId);
+
+        Task<ServiceResultM> RegisterLoad(LoadM load);
+
+        Task<IEnumerable<LoadM>> GetLoadedMedicationsByDrone(int droneId);
     }
 }
